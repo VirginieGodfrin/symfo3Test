@@ -1,0 +1,4 @@
+
+hello:
+    path:     /hello
+    defaults: { _controller: TestBlogBundle:Advert:index }
