@@ -4,26 +4,39 @@ namespace Test\BlogBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 //génération d'un URL absolue
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+//redirection 
+use Symfony\Component\HttpFoundation\RedirectResponse; 
+
 class AdvertController extends Controller {
 
-	public function indexAction(){
+	public function indexAction($page){
 
-        $content= $this->get('templating')->render('TestBlogBundle:Advert:index.html.twig', 
+        if($page < 1 ){
+            throw new NotFoundHttpException('Page "'.$page.'" inexistante.');
+        }
+        return $this->render('TestBlogBundle:Advert:index.html.twig', 
+            array('listAdverts'=>array())
+        );
+
+        /*$content= $this->get('templating')->render('TestBlogBundle:Advert:index.html.twig', 
         	array ('nom'=>'Godfrin')
         	);
-        return new Response($content);
+        return new Response($content);*/
 
-    // générer une URL
+
+// générer une URL
         /*$url = $this->get('router')->generate( //appel de la méthode generate
         	'blog_view', //le nom de la route
         	array('id'=>5) //le ou les parametres
         );*/
         
-    //générer une URL absolue
+//générer une URL absolue
         /*$url = $this->get('router')->generate('blog_view', 
         	array('id'=>5), 
         	UrlGeneratorInterface::ABSOLUTE_URL);*/
@@ -33,9 +46,94 @@ class AdvertController extends Controller {
     
 
     }
+    public function menuAction(){
+        $listAdverts = array(
+            array('id' => 2, 'title' => 'Recherche développeur Symfony'),
+            array('id' => 5, 'title' => 'Mission de webmaster'),
+            array('id' => 9, 'title' => 'Offre de stage webdesigner')
+        );
+
+        return $this->render('TestBlogBundle:Advert:menu.html.twig', 
+            array('listAdverts' => $listAdverts)
+        );
+
+  }
 
     public function viewAction($id){
-    	return new Response("affichage de l'annonce d'id : " .$id);
+
+//Request
+    // public function viewAction($id, Request $request){...}
+    //request permet de récupérer les parametres utiles à la requête: blog/advert/5?tag=vivi&nom=godfrin
+        //$tag = $request->query->get('tag');
+        //$nom = $request->query->get('nom');
+        //query sert à recupérer les parametres passés en get (clic sur lien, url)
+        //request sert à récupérer les parametres passés en post (envoi d'un formulaire)
+            // ex: if ($request->isMethod('POST')){traitement du formulaire}
+        //les méthodes de l'objet request : http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Request.html
+
+    	//return new Response("affichage de l'annonce d'id : " .$id. ", tag: " .$tag);
+
+        /*return $this->get('templating')->renderResponse(
+            'TestBlogBundle:Advert:index.html.twig',
+            array('id' => $id, 'tag' => $tag,'nom' =>$nom )
+            );*/
+        //ou
+
+        return $this->render('TestBlogBundle:Advert:view.html.twig', 
+            array('id' => $id)
+            );
+    }
+
+    /*public function addAction(Request $request){
+        $session = $request->getSession();
+    
+        // Bien sûr, cette méthode devra réellement ajouter l'annonce
+    
+        // Mais faisons comme si c'était le cas
+        $session->getFlashBag()->add('info', 'Annonce bien enregistrée');
+
+        // Le « flashBag » est ce qui contient les messages flash dans la session
+        // Il peut bien sûr contenir plusieurs messages :
+        $session->getFlashBag()->add('info', 'Oui oui, elle est bien enregistrée !');
+
+        // Puis on redirige vers la page de visualisation de cette annonce
+        return $this->redirectToRoute('blog_view', array('id' => 5));
+    }*/
+
+    public function addAction(Request $request){
+        if($request->isMethod('POST')){
+    //objet session
+            $request->getSession()->getFlashbag()->add('notice', 'annonce enrégistrée');
+
+            return $this->redirectToRoute('blog_view', array('id'=>5));
+        }
+
+        return $this->render('TestBlogBundle:Advert:add.html.twig');
+    }
+
+    public function editAction($id, Request $request){
+
+        if($request->isMethod('POST')){
+
+            $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
+
+            return $this->redirectToRoute('blog_view', array('id'=>5));
+        }
+        return $this->render('TestBlogBundle:Advert:edit.html.twig');
+
+    }
+
+    public function deleteAction($id){
+        return $this->render('TestBlogBundle:Advert:delete.html.twig');
+    }
+
+    public function testAction(){
+        return $this->render('TestBlogBundle:Advert:test.html.twig');
+    }
+
+    public function redirectAction(){
+        $url = $this->get('router')->generate('blog_test');
+        return new redirectResponse($url);
     }
 
     public function viewSlugAction ($slug, $year, $_format){
@@ -45,5 +143,7 @@ class AdvertController extends Controller {
     		);
     }
 }
+
+//presonaliser une page d'erreure : https://openclassrooms.com/courses/developpez-votre-site-web-avec-le-framework-symfony2/personnaliser-les-pages-d-erreur
 
 

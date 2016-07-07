@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Test Blog {% endblock %}</title>
+
+	{% block stylesheets %}
+    	{# On charge le CSS de bootstrap depuis le site directement #}
+    	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	{% endblock %}
+  </head>
+  
+  <body>
+	<div class="container">
+		<header class="jumbotron">
+  			<h1>Blog</h1>
+  		
+
+  		<div class="row">
+  			<div id="menu" class="navbar">
+  				<h3>Menu</h3>
+  				<ul class="nav nav-pills nav-stacked">
+	  				<li> <a href="{{ path('blog_home')}}">Accueil</a></li>
+	  				<li><a href="{{ path('blog_add')}}">Ajouter une annonce</a></li>
+  				</ul>
+  			</div>
+  		</header>
+
+  		<div>
+  			<h4>les dernières annonces</h4>
+      		{{ render(controller("TestBlogBundle:Advert:menu", {'limit':3})) }}
+    	</div>
+
+    	<section id="content" class="col-md-9">
+    		{% block body %}
+    		{% endblock %}
+    	</section>
+
+  		<hr>
+
+		<footer>
+  			<p>The sky's the limit © {{ 'now'|date('Y') }} and beyond.</p>
+  		</footer>
+  	</div>
+  		
+{% block javascripts %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+{% endblock %}  		
+
+  </body>
+  
+</html>

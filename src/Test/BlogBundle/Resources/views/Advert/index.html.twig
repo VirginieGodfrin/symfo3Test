@@ -1,22 +1,28 @@
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Bienvenue sur ma première page avec OpenClassrooms !</title>
-  </head>
-  <body>
-    <h1>Hello {{ nom }}!</h1>
+{% extends "TestBlogBundle::layout.html.twig" %}
 
-    <p>
-      Le Hello World est un grand classique en programmation.
-      Il signifie énormément, car cela veut dire que vous avez
-      réussi à exécuter le programme pour accomplir une tâche simple :
-      afficher ce hello world !
-    </p>
-<!-- Générer une URL - TWIG -->
-    <a href="{{ path('blog_view', { 'id': 5 }) }}">
-    Lien vers l'annonce d'id {{5}}
-    </a>
+{% block title %} 
+  Accueil - {{ parent() }}
+{% endblock %}
 
-  </body>
-</html>
+{% block blog_body %}
+  <h2>liste des Annonces</h2>
+  <ul>
+    {% for advert in listAdverts %}
+
+      <li>
+        <a href="{{ path('blog_view', {'id': advert.id}) }}">
+          {{ advert.title }}
+        </a>
+        <p>par {{ advert.author }},le {{ advert.date|date('d/m/Y') }}</p>
+      </li>
+
+    {% else %}
+
+      <li>Pas (encore !) d'annonces</li>
+
+    {% endfor %}
+
+  </ul>
+
+{% endblock %}

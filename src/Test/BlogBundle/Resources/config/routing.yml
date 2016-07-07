@@ -1,47 +1,47 @@
 
 blog_home:
-    path:    /{page}
+    path:      /{page}
     defaults:
         _controller: TestBlogBundle:Advert:index
-        page: 1
+        page:        1
     requirements:
-        page:\d*
+        page: \d*
 
 blog_view:
-    path:    /advert/{id}
+    path:      /advert/{id}
     defaults:
         _controller: TestBlogBundle:Advert:view
     requirements:
-    	id: \d+
+        id: \d+
+
+blog_redirect: 
+    path:    /redirect
+    defaults:
+        _controller: TestBlogBundle:Advert:redirect
+
+blog_test: 
+    path:    /test
+    defaults: 
+        _controller: TestBlogBundle:Advert:test
 
 blog_add:
-    path:    /add
+    path:      /add
     defaults:
         _controller: TestBlogBundle:Advert:add
 
-blog_edit: 
-	path:    /edit/{id}
-	defaults: 
-		_controller: TestBlogBundle:Advert:edit
-	requirements:
-		id: \d+
+blog_edit:
+    path:      /edit/{id}
+    defaults:
+        _controller: TestBlogBundle:Advert:edit
+    requirements:
+        id: \d+
 
-blog_delete: 
-	path:    /delete/{id}
-	defaults:
-		_controller: TestBlogBundle:Advert:delete
-	requirements:
-		id: \d+	
-
-#blog_view_slug:
-    #path:    /{year}/{slug}.{_format}
-    #defaults:
-        #_controller: TestBlogBundle:Advert:viewSlug
-        #format: html
-        #requirements: 
-            #year:   \d{4}
-            #format: html|xml
-
+blog_delete:
+    path:      /delete/{id}
+    defaults:
+        _controller: TestBlogBundle:Advert:delete
+    requirements:
+        id: \d+
 
 
 
