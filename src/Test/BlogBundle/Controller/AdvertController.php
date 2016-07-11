@@ -13,6 +13,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 //redirection 
 use Symfony\Component\HttpFoundation\RedirectResponse; 
 
+//service
+use Symfony\Component\DependencyInjection\Loader;
+
 class AdvertController extends Controller {
 
 	public function indexAction($page){
@@ -101,6 +104,16 @@ class AdvertController extends Controller {
     }*/
 
     public function addAction(Request $request){
+    // recup du service antispam
+        $antispam = $this->container->get('test_blog.antispam');
+
+        $text= " bla bla pour test";
+
+        if ($antispam->isSpam($text)) {
+            throw new \Exception('Votre message a été détecté comme spam !');
+        } 
+
+
         if($request->isMethod('POST')){
     //objet session
             $request->getSession()->getFlashbag()->add('notice', 'annonce enrégistrée');
