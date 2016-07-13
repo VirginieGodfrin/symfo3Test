@@ -65,22 +65,36 @@ class AdvertController extends Controller {
     public function viewAction($id){
 
 //Request
-    // public function viewAction($id, Request $request){...}
-    //request permet de récupérer les parametres utiles à la requête: blog/advert/5?tag=vivi&nom=godfrin
-        //$tag = $request->query->get('tag');
-        //$nom = $request->query->get('nom');
-        //query sert à recupérer les parametres passés en get (clic sur lien, url)
-        //request sert à récupérer les parametres passés en post (envoi d'un formulaire)
-            // ex: if ($request->isMethod('POST')){traitement du formulaire}
-        //les méthodes de l'objet request : http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Request.html
+    /* public function viewAction($id, Request $request){...}
+     * request permet de récupérer les parametres utiles à la requête: blog/advert/5?tag=vivi&nom=godfrin
+     *  $tag = $request->query->get('tag');
+     *  $nom = $request->query->get('nom');
+     *  query sert à recupérer les parametres passés en get (clic sur lien, url)
+     *  request sert à récupérer les parametres passés en post (envoi d'un formulaire)
+     *      ex: if ($request->isMethod('POST')){traitement du formulaire}
+     *  les méthodes de l'objet request : http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Request.html
+     */
 
-    	//return new Response("affichage de l'annonce d'id : " .$id. ", tag: " .$tag);
+     //	return new Response("affichage de l'annonce d'id : " .$id. ", tag: " .$tag);
+       
 
-        /*return $this->get('templating')->renderResponse(
-            'TestBlogBundle:Advert:index.html.twig',
-            array('id' => $id, 'tag' => $tag,'nom' =>$nom )
-            );*/
-        //ou
+    /*
+     * return $this->get('templating')->renderResponse(
+     * 'TestBlogBundle:Advert:index.html.twig',
+     *       array('id' => $id, 'tag' => $tag,'nom' =>$nom )
+     *  );
+     */
+
+    //recupération du repo
+        $repository = $this->getDoctrine()->getManager
+            ->getRepository('TestBlogBundle:Advert');
+
+    //récup de l'entité en fonction de id $advert intance de l'entité Advert
+        $advert = $repository->find($id); 
+
+        if( null === $advert){
+            throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
+        }
 
         return $this->render('TestBlogBundle:Advert:view.html.twig', 
             array('id' => $id)
@@ -104,21 +118,35 @@ class AdvertController extends Controller {
     }*/
 
     public function addAction(Request $request){
-    // recup du service antispam
-        $antispam = $this->container->get('test_blog.antispam');
 
-        $text= " bla bla pour test";
+    // recup du service antispam exemple
+        /*
+         * $antispam = $this->container->get('test_blog.antispam');
+         * $text= " bla bla pour test";
+         * if ($antispam->isSpam($text)) {
+         *  throw new \Exception('Votre message a été détecté comme spam !');
+         * } 
+        */
+        $advert = new Advert();
+        //...
+        $image = new Image();
+        //...
 
-        if ($antispam->isSpam($text)) {
-            throw new \Exception('Votre message a été détecté comme spam !');
-        } 
+        $advert->setImage($image);
+
+        $em= $this->getDoctrine()->getManager();
+        $em->persist($advert);
+        $em->flush();
+
 
 
         if($request->isMethod('POST')){
     //objet session
             $request->getSession()->getFlashbag()->add('notice', 'annonce enrégistrée');
 
-            return $this->redirectToRoute('blog_view', array('id'=>5));
+            return $this->redirectToRoute('blog_view', 
+                array('id'=>$advert->getId())
+            );
         }
 
         return $this->render('TestBlogBundle:Advert:add.html.twig');
@@ -154,6 +182,27 @@ class AdvertController extends Controller {
     			"affiche : ".$slug." crée en : ".$year. " au format :".$_format.". bla bla bla"
 
     		);
+    }
+
+//fonction pour modiier Image
+    public function editImageAction($advertId)
+    {
+      $em = $this->getDoctrine()->getManager();
+
+      // On récupère l'annonce
+      $advert = $em->getRepository('TestBlogBundle:Advert')->find($advertId);
+
+      // On modifie l'URL de l'image par exemple
+      $advert->getImage()->setUrl('test.png');
+
+      // On n'a pas besoin de persister l'annonce ni l'image.
+      // Rappelez-vous, ces entités sont automatiquement persistées car
+      // on les a récupérées depuis Doctrine lui-même
+      
+      // On déclenche la modification
+      $em->flush();
+
+      return new Response('OK');
     }
 }
 

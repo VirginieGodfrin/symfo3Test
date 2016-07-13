@@ -14,9 +14,12 @@
       {% endfor %}
     </div>
 
-    <p>
-      Ici nous pourrons lire l'annonce ayant comme id : {{ id }}<br />
-      Mais pour l'instant, nous ne savons pas encore le faire, cela viendra !
-    </p>
+    <div>
+
+      {% if advert.image is not null %}
+        <img src="{{ advert.image.url }}" alt="{{ advert.image.alt }}">
+      {% endif %}
+      
+    </div>
   </body>
 </html>
