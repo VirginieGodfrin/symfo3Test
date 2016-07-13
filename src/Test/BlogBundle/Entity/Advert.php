@@ -2,6 +2,7 @@
 
 namespace Test\BlogBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -59,6 +60,32 @@ class Advert
      * @ORM\OneToOne(targetEntity="Test\BlogBundle\Entity\Image", cascade={"persist"})
      */
     private $image;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Test\BlogBundle\Entity\Category", cascade={"persist"})
+     */
+    private $categories;
+    // Advert propriétaie de la relation manyToMany
+
+// relation Bidirectionelle
+    /**
+     * @ORM\OneToMany(targetEntity="Test\BlogBundle\Entity\Application", mappedBy="advert")
+     */
+    private $applications;
+    //une annonce est liée à plusieurs applications, nous somme côté inverse (OneToMany)
+    //mappedBy correspond à l'attribut de l'entité propriétaire qui pointe vers l'entité inverse
+    //c'est le private advert de l'entité application
+
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->date = new \DateTime();
+        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->applications = new ArrayCollection();
+    }
 
 
     /**
@@ -213,5 +240,77 @@ class Advert
     public function getImage()
     {
         return $this->image;
+    }
+    
+
+    /**
+     * Add category
+     *
+     * @param \Test\BlogBundle\Entity\Category $category
+     *
+     * @return Advert
+     */
+    public function addCategory(\Test\BlogBundle\Entity\Category $category)
+    {
+        // Ici, on utilise l'ArrayCollection comme un tableau
+        $this->categories[] = $category;
+
+        return $this;
+    }
+
+    /**
+     * Remove category
+     *
+     * @param \Test\BlogBundle\Entity\Category $category
+     */
+    public function removeCategory(\Test\BlogBundle\Entity\Category $category)
+    {
+        // Ici on utilise une méthode de l'ArrayCollection, pour supprimer la catégorie en argument
+        $this->categories->removeElement($category);
+    }
+
+    /**
+     * Get categories
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCategories()
+    {
+        //ici on récupère une liste de categories
+        return $this->categories;
+    }
+
+    /**
+     * Add application
+     *
+     * @param \Test\BlogBundle\Entity\Application $application
+     *
+     * @return Advert
+     */
+    public function addApplication(\Test\BlogBundle\Entity\Application $application)
+    {
+        $this->applications[] = $application;
+
+        return $this;
+    }
+
+    /**
+     * Remove application
+     *
+     * @param \Test\BlogBundle\Entity\Application $application
+     */
+    public function removeApplication(\Test\BlogBundle\Entity\Application $application)
+    {
+        $this->applications->removeElement($application);
+    }
+
+    /**
+     * Get applications
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getApplications()
+    {
+        return $this->applications;
     }
 }

@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Loader;
 
 class AdvertController extends Controller {
 
-	public function indexAction($page){
+    public function indexAction($page){
 
         if($page < 1 ){
             throw new NotFoundHttpException('Page "'.$page.'" inexistante.');
@@ -26,29 +26,8 @@ class AdvertController extends Controller {
         return $this->render('TestBlogBundle:Advert:index.html.twig', 
             array('listAdverts'=>array())
         );
-
-        /*$content= $this->get('templating')->render('TestBlogBundle:Advert:index.html.twig', 
-        	array ('nom'=>'Godfrin')
-        	);
-        return new Response($content);*/
-
-
-// générer une URL
-        /*$url = $this->get('router')->generate( //appel de la méthode generate
-        	'blog_view', //le nom de la route
-        	array('id'=>5) //le ou les parametres
-        );*/
-        
-//générer une URL absolue
-        /*$url = $this->get('router')->generate('blog_view', 
-        	array('id'=>5), 
-        	UrlGeneratorInterface::ABSOLUTE_URL);*/
-
-    
-        /*return new Response ("l'url de l'annonce id 5 est : " .$url);*/
-    
-
     }
+
     public function menuAction(){
         $listAdverts = array(
             array('id' => 2, 'title' => 'Recherche développeur Symfony'),
@@ -60,85 +39,78 @@ class AdvertController extends Controller {
             array('listAdverts' => $listAdverts)
         );
 
-  }
+    }
 
     public function viewAction($id){
 
-//Request
-    /* public function viewAction($id, Request $request){...}
-     * request permet de récupérer les parametres utiles à la requête: blog/advert/5?tag=vivi&nom=godfrin
-     *  $tag = $request->query->get('tag');
-     *  $nom = $request->query->get('nom');
-     *  query sert à recupérer les parametres passés en get (clic sur lien, url)
-     *  request sert à récupérer les parametres passés en post (envoi d'un formulaire)
-     *      ex: if ($request->isMethod('POST')){traitement du formulaire}
-     *  les méthodes de l'objet request : http://api.symfony.com/3.0/Symfony/Component/HttpFoundation/Request.html
-     */
+      $em = $this->getDoctrine()->getManager();
 
-     //	return new Response("affichage de l'annonce d'id : " .$id. ", tag: " .$tag);
-       
+      $advert = $em->getRepository('TestBlogBundle:Advert')->find($id)
 
-    /*
-     * return $this->get('templating')->renderResponse(
-     * 'TestBlogBundle:Advert:index.html.twig',
-     *       array('id' => $id, 'tag' => $tag,'nom' =>$nom )
-     *  );
-     */
+      if( null === $advert){
+        throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
+      }
 
-    //recupération du repo
-        $repository = $this->getDoctrine()->getManager
-            ->getRepository('TestBlogBundle:Advert');
+      $listApplications = $em 
+        ->getRepository('TestBlogBundle:Application')
+        ->findBy(array('advert' => $advert));
 
-    //récup de l'entité en fonction de id $advert intance de l'entité Advert
-        $advert = $repository->find($id); 
+      $listAdvertSkills = $em
+        ->getRepository('TestBlogBundle:AdvertSkill')
+        ->findBy(array('advert' => $advert ));  
 
-        if( null === $advert){
-            throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
-        }
-
-        return $this->render('TestBlogBundle:Advert:view.html.twig', 
-            array('id' => $id)
-            );
+      return $this->render('TestBlogBundle:Advert:view.html.twig', array(
+        'id' => $id,
+        'listApplications' => $listApplications,
+        'listAdvertSkills' => $listAdvertSkills
+      ));
     }
-
-    /*public function addAction(Request $request){
-        $session = $request->getSession();
-    
-        // Bien sûr, cette méthode devra réellement ajouter l'annonce
-    
-        // Mais faisons comme si c'était le cas
-        $session->getFlashBag()->add('info', 'Annonce bien enregistrée');
-
-        // Le « flashBag » est ce qui contient les messages flash dans la session
-        // Il peut bien sûr contenir plusieurs messages :
-        $session->getFlashBag()->add('info', 'Oui oui, elle est bien enregistrée !');
-
-        // Puis on redirige vers la page de visualisation de cette annonce
-        return $this->redirectToRoute('blog_view', array('id' => 5));
-    }*/
 
     public function addAction(Request $request){
 
-    // recup du service antispam exemple
-        /*
-         * $antispam = $this->container->get('test_blog.antispam');
-         * $text= " bla bla pour test";
-         * if ($antispam->isSpam($text)) {
-         *  throw new \Exception('Votre message a été détecté comme spam !');
-         * } 
-        */
+      $em= $this->getDoctrine()->getManager();
+
         $advert = new Advert();
         //...
         $image = new Image();
         //...
-
         $advert->setImage($image);
 
-        $em= $this->getDoctrine()->getManager();
+        $appli1 = new Application();
+        //...
+
+        $appli2 = new Appliaction();
+        //...
+
+      //on lie les advert aux applications
+        //$appli1->setAdvert($advert);
+        //$appli2->setAdvert($advert); 
+
+      //on lie les applications aux annonces
+        //$advert->addApplication($appli1);
+        //$adevrt->addApplication($appli2);
+
+        $listSkill = $em->getRepository('TestBlogBundle:Skill')->findAll();
+
+          foreach ($listSkill as $skill) {
+            
+            $advertSkill = new AdvertSkill();
+            $advertSkill->setAdvert($advert);
+            $advertSkill->setSkill($skill);
+            $advertSkill->setLevel('Null');
+
+            $em->persist($advertSkill);
+          }
+
+        
+
         $em->persist($advert);
+
+        $em->persist($appli1);
+
+        $em->persist($appli2);
+
         $em->flush();
-
-
 
         if($request->isMethod('POST')){
     //objet session
@@ -154,9 +126,26 @@ class AdvertController extends Controller {
 
     public function editAction($id, Request $request){
 
+      $em = $this->getDoctrine()->getManager();
+
+      $advert = $em->getRepository('TestBlogBundle:Advert')->find($id);
+
+      if (null === $advert) {
+        throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
+      }
+
+      $listCategories = $em->getRepository('TestBlogBundle:Category')->findAll();
+
+      //boucle sur le tableau listCategories pour les liées à un article
+      foreach ($listCategories as $Category) {
+        $advert->addCategory($category);
+      }
+
+      $em->flush();
+
         if($request->isMethod('POST')){
 
-            $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
+           $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
 
             return $this->redirectToRoute('blog_view', array('id'=>5));
         }
@@ -165,7 +154,24 @@ class AdvertController extends Controller {
     }
 
     public function deleteAction($id){
-        return $this->render('TestBlogBundle:Advert:delete.html.twig');
+
+      $em = $this->getDoctrine()->getManager();
+
+    // On récupère l'annonce $id
+      $advert = $em->getRepository('TestBlogBundle:Advert')->find($id);
+
+      if (null === $advert) {
+        throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
+      }
+
+    // On boucle sur les catégories de l'annonce pour les supprimer
+      foreach ($advert->getCategories() as $category) {
+        $advert->removeCategory($category);
+      }
+
+      $em->flush();
+
+      return $this->render('TestBlogBundle:Advert:delete.html.twig');
     }
 
     public function testAction(){
@@ -184,7 +190,7 @@ class AdvertController extends Controller {
     		);
     }
 
-//fonction pour modiier Image
+//fonction pour modifier Image
     public function editImageAction($advertId)
     {
       $em = $this->getDoctrine()->getManager();
