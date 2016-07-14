@@ -4,12 +4,14 @@ namespace Test\BlogBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Advert
  *
  * @ORM\Table(name="advert")
  * @ORM\Entity(repositoryClass="Test\BlogBundle\Repository\AdvertRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Advert
 {
@@ -63,6 +65,7 @@ class Advert
 
     /**
      * @ORM\ManyToMany(targetEntity="Test\BlogBundle\Entity\Category", cascade={"persist"})
+     * @ORM\JoinTable(name="advert_category")
      */
     private $categories;
     // Advert propriétaie de la relation manyToMany
@@ -76,6 +79,23 @@ class Advert
     //mappedBy correspond à l'attribut de l'entité propriétaire qui pointe vers l'entité inverse
     //c'est le private advert de l'entité application
 
+//les callbacks
+    /**
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     */
+    private$updatedAt;
+
+    /**
+     * @ORM\Column(name="nb_applications", type="integer")
+     */
+    private $nbApplications = 0;
+
+//extension
+    /**
+     * @Gedmo\Slug(fields={"title"})
+     * @ORM\Column(name="slug", type="string", length=255, unique=true)
+     */
+    private $slug;    
 
     /**
      * Constructor
@@ -83,8 +103,26 @@ class Advert
     public function __construct()
     {
         $this->date = new \DateTime();
-        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->categories = new ArrayCollection();
         $this->applications = new ArrayCollection();
+    }
+
+// évènement PreUpdate    
+    /**
+     * @ORM\PreUpdate
+     */
+    public function updateDate(){
+        $this->setUpdateAt(new \DateTime());
+    }
+
+    public function increaseApplication()
+    {
+        $this->nbApplications++;
+    }
+
+    public function decreaseApplication()
+    {
+        $this->nbApplications--;
     }
 
 
@@ -225,7 +263,7 @@ class Advert
      *
      * @return Advert
      */
-    public function setImage(\Test\BlogBundle\Entity\Image $image = null)
+    public function setImage(Image $image = null)
     {
         $this->image = $image;
 
@@ -250,7 +288,7 @@ class Advert
      *
      * @return Advert
      */
-    public function addCategory(\Test\BlogBundle\Entity\Category $category)
+    public function addCategory(Category $category)
     {
         // Ici, on utilise l'ArrayCollection comme un tableau
         $this->categories[] = $category;
@@ -263,7 +301,7 @@ class Advert
      *
      * @param \Test\BlogBundle\Entity\Category $category
      */
-    public function removeCategory(\Test\BlogBundle\Entity\Category $category)
+    public function removeCategory(Category $category)
     {
         // Ici on utilise une méthode de l'ArrayCollection, pour supprimer la catégorie en argument
         $this->categories->removeElement($category);
@@ -287,9 +325,11 @@ class Advert
      *
      * @return Advert
      */
-    public function addApplication(\Test\BlogBundle\Entity\Application $application)
+    public function addApplication(Application $application)
     {
         $this->applications[] = $application;
+        //on lie annonce à application dans le cas d'une ManyToMany
+        $application->setAdvert($this);
 
         return $this;
     }
@@ -299,7 +339,7 @@ class Advert
      *
      * @param \Test\BlogBundle\Entity\Application $application
      */
-    public function removeApplication(\Test\BlogBundle\Entity\Application $application)
+    public function removeApplication(Application $application)
     {
         $this->applications->removeElement($application);
     }
@@ -313,4 +353,33 @@ class Advert
     {
         return $this->applications;
     }
+
+      /**
+   * @param \DateTime $updatedAt
+   */
+  public function setUpdatedAt(\Datetime $updatedAt = null)
+  {
+      $this->updatedAt = $updatedAt;
+  }
+  /**
+   * @return \DateTime
+   */
+  public function getUpdatedAt()
+  {
+      return $this->updatedAt;
+  }
+  /**
+   * @param integer $nbApplications
+   */
+  public function setNbApplications($nbApplications)
+  {
+      $this->nbApplications = $nbApplications;
+  }
+  /**
+   * @return integer
+   */
+  public function getNbApplications()
+  {
+      return $this->nbApplications;
+  }
 }

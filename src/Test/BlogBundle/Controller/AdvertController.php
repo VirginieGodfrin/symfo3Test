@@ -16,6 +16,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 //service
 use Symfony\Component\DependencyInjection\Loader;
 
+use Test\BlogBundle\Entity\Advert;
+use Test\BlogBundle\Entity\AdvertSkill;
+use Test\BlogBundle\Entity\Application;
+use Test\BlogBundle\Entity\Image;
+
 class AdvertController extends Controller {
 
     public function indexAction($page){
@@ -23,6 +28,30 @@ class AdvertController extends Controller {
         if($page < 1 ){
             throw new NotFoundHttpException('Page "'.$page.'" inexistante.');
         }
+        
+        //liste d'annonces en dur !!!
+
+        $listAdvert = array(
+          array(
+            'title' => 'le monde des tortues',
+            'id' => 1, 
+            'author' => 'Bob',
+            'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.',
+            'date' => new \Datetime()),
+          array(
+            'title' => 'Le monde des chats',
+            'id' => 2, 
+            'author' => 'Bobette',
+            'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.',
+            'date' => new \Datetime()),
+          array(
+            'title' => 'Le monde des Lions',
+            'id' => 3, 
+            'author' => 'Tintin',
+            'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.',
+            'date' => new \Datetime()),
+          );
+
         return $this->render('TestBlogBundle:Advert:index.html.twig', 
             array('listAdverts'=>array())
         );
@@ -30,9 +59,9 @@ class AdvertController extends Controller {
 
     public function menuAction(){
         $listAdverts = array(
-            array('id' => 2, 'title' => 'Recherche développeur Symfony'),
-            array('id' => 5, 'title' => 'Mission de webmaster'),
-            array('id' => 9, 'title' => 'Offre de stage webdesigner')
+            array('id' => 1, 'title' => 'Le monde des tortues'),
+            array('id' => 2, 'title' => 'Le monde des chats'),
+            array('id' => 3, 'title' => 'Le monde des Lions')
         );
 
         return $this->render('TestBlogBundle:Advert:menu.html.twig', 
@@ -45,9 +74,9 @@ class AdvertController extends Controller {
 
       $em = $this->getDoctrine()->getManager();
 
-      $advert = $em->getRepository('TestBlogBundle:Advert')->find($id)
+      $advert = $em->getRepository('TestBlogBundle:Advert')->find($id);
 
-      if( null === $advert){
+      if($advert === null){
         throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
       }
 
@@ -60,7 +89,7 @@ class AdvertController extends Controller {
         ->findBy(array('advert' => $advert ));  
 
       return $this->render('TestBlogBundle:Advert:view.html.twig', array(
-        'id' => $id,
+        'advert' => $advert,
         'listApplications' => $listApplications,
         'listAdvertSkills' => $listAdvertSkills
       ));
@@ -71,20 +100,29 @@ class AdvertController extends Controller {
       $em= $this->getDoctrine()->getManager();
 
         $advert = new Advert();
+        $advert->setTitle('Le monde des éléphants.');
+        $advert->setAuthor('Lara');
+        $advert->setContent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.");
         //...
         $image = new Image();
+        $image->setUrl('https://pixabay.com/static/uploads/photo/2016/01/30/17/41/africa-1170106_960_720.jpg');
+        $image->setAlt('éléphant');
         //...
         $advert->setImage($image);
 
         $appli1 = new Application();
-        //...
+        $appli1->setAuthor('Yoko');
+        $appli1->setContent("j'aime voyager.");
+        
 
         $appli2 = new Appliaction();
-        //...
+        $appli1->setAuthor('Captain Hadhock');
+        $appli1->setContent("je vous déteste tous");
+        
 
       //on lie les advert aux applications
-        //$appli1->setAdvert($advert);
-        //$appli2->setAdvert($advert); 
+        $appli1->setAdvert($advert);
+        $appli2->setAdvert($advert); 
 
       //on lie les applications aux annonces
         //$advert->addApplication($appli1);
@@ -112,12 +150,14 @@ class AdvertController extends Controller {
 
         $em->flush();
 
+        return new Response('Slug génére: '.$advert->getSlug());
+
         if($request->isMethod('POST')){
     //objet session
-            $request->getSession()->getFlashbag()->add('notice', 'annonce enrégistrée');
+            $request->getSession()->getFlashbag()->add('notice', 'Annonce enrégistrée');
 
             return $this->redirectToRoute('blog_view', 
-                array('id'=>$advert->getId())
+                array('id' => $advert->getId())
             );
         }
 
@@ -147,9 +187,10 @@ class AdvertController extends Controller {
 
            $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
 
-            return $this->redirectToRoute('blog_view', array('id'=>5));
+            return $this->redirectToRoute('blog_view', array('id' => $id));
         }
-        return $this->render('TestBlogBundle:Advert:edit.html.twig');
+        return $this->render('TestBlogBundle:Advert:edit.html.twig', array(
+          'advert' => $advert));
 
     }
 
@@ -173,6 +214,8 @@ class AdvertController extends Controller {
 
       return $this->render('TestBlogBundle:Advert:delete.html.twig');
     }
+
+//autres méthodes ....  
 
     public function testAction(){
         return $this->render('TestBlogBundle:Advert:test.html.twig');
@@ -210,6 +253,26 @@ class AdvertController extends Controller {
 
       return new Response('OK');
     }
+
+//fonction pour lister les application en focntion d'un article 
+  public function listAction(){
+
+      $listAdverts = $this
+        ->getDoctrine()
+        ->getManager()
+        ->getRepository('OCPlatformBundle:Advert')
+        ->getAdvertWithApplications()
+    ;
+
+    foreach ($listAdverts as $advert) {
+      // Ne déclenche pas de requête : les candidatures sont déjà chargées !
+      // Vous pourriez faire une boucle dessus pour les afficher toutes
+      $advert->getApplications();
+    }
+  }
+
+  
+
 }
 
 //presonaliser une page d'erreure : https://openclassrooms.com/courses/developpez-votre-site-web-avec-le-framework-symfony2/personnaliser-les-pages-d-erreur

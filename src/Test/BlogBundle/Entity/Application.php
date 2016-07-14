@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="application")
  * @ORM\Entity(repositoryClass="Test\BlogBundle\Repository\ApplicationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Application
 {
@@ -43,7 +44,7 @@ class Application
     private $date;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Test\BlogBundle\Entity\Advert" inversedBy="applications")
+     * @ORM\ManyToOne(targetEntity="Test\BlogBundle\Entity\Advert", inversedBy="applications")
      * @ORM\JoinColumn(nullable=false)
      */
     private $advert;
@@ -51,8 +52,28 @@ class Application
     // inversedBy correspond au symétrique du mappedBy, l'attribut applications de l'entité inverse: Advert
     // qui pointe vers l'entité propriétaire Application
 
-//  @ORM\JoinColumn(nullable=false) : rend la realtion obligatoire
+    // @ORM\JoinColumn(nullable=false) : rend la realtion obligatoire
 
+//callback 
+//evènement PrePersist    
+    /**
+     * @ORM\PrePersist
+     */
+    public function increase()
+    {
+        $this->getAdvert()->increaseApplication();
+    }
+
+    /**
+     * @ORM\PreRemove
+     */
+    public function decrease()
+    {
+        $this->getAdvert()->decreaseApplication();
+    }
+
+
+//constructor
     public function __construct(){
 
         $this->date = new \Datetime();

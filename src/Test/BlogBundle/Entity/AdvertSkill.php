@@ -85,7 +85,7 @@ class AdvertSkill
      *
      * @return AdvertSkill
      */
-    public function setAdvert(\Test\BlogBundle\Entity\Advert $advert)
+    public function setAdvert(Advert $advert)
     {
         $this->advert = $advert;
 
@@ -109,7 +109,7 @@ class AdvertSkill
      *
      * @return AdvertSkill
      */
-    public function setSkill(\Test\BlogBundle\Entity\Skill $skill)
+    public function setSkill(Skill $skill)
     {
         $this->skill = $skill;
 
