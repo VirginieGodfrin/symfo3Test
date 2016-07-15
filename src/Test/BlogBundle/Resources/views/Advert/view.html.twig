@@ -7,18 +7,15 @@
  {% block blog_body %}
 
     <div>
+      <h2> {{ advert.title }}</h2>
 
       {% if advert.image is not null %}
-        <img src="{{ advert.image.url }}" alt="{{ advert.image.alt }}">
+        <img src="{{ advert.image.url }}" alt="{{ advert.image.alt }}" width="200">
       {% endif %} 
 
-    </div>
+      <i> Par {{ advert.author }}, le {{ advert.date|date('d/m/Y') }}</i>
+      <p> {{ advert.content }} </p>
 
-    <h2> {{ advert.title }}</h2>
-    <i> Par {{ advert.author }}, le {{ advert.date|date('d/m/Y') }}</i>
-
-    <div>
-      {{ advert.content }}
     </div>
 
     {% if not advert.categories.empty %}

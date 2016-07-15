@@ -28,41 +28,42 @@ class AdvertController extends Controller {
         if($page < 1 ){
             throw new NotFoundHttpException('Page "'.$page.'" inexistante.');
         }
-        
-        //liste d'annonces en dur !!!
 
-        $listAdvert = array(
-          array(
-            'title' => 'le monde des tortues',
-            'id' => 1, 
-            'author' => 'Bob',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.',
-            'date' => new \Datetime()),
-          array(
-            'title' => 'Le monde des chats',
-            'id' => 2, 
-            'author' => 'Bobette',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.',
-            'date' => new \Datetime()),
-          array(
-            'title' => 'Le monde des Lions',
-            'id' => 3, 
-            'author' => 'Tintin',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.',
-            'date' => new \Datetime()),
-          );
+        $nbPerPage = 3;
+        // à défaut de $this->container->getParameter('nb_per_page')
 
-        return $this->render('TestBlogBundle:Advert:index.html.twig', 
-            array('listAdverts'=>array())
+        $em = $this->getDoctrine()->getManager();
+
+        $listAdverts = $em
+          ->getRepository('TestBlogBundle:Advert')
+          ->myFindAllOrder($page, $nbPerPage);
+
+        $nbPages = ceil(count($listAdverts)/$nbPerPage);
+        var_dump(count($listAdverts));
+
+        if($page > $nbPages){
+          throw $this->createNotFoundException("La page ".$page." n'existe pas.");
+        }  
+
+        return $this->render('TestBlogBundle:Advert:index.html.twig', array(
+          'listAdverts' => $listAdverts,
+          'nbPages' => $nbPages,
+          'page' => $page )
         );
     }
 
-    public function menuAction(){
-        $listAdverts = array(
-            array('id' => 1, 'title' => 'Le monde des tortues'),
-            array('id' => 2, 'title' => 'Le monde des chats'),
-            array('id' => 3, 'title' => 'Le monde des Lions')
-        );
+    public function menuAction($limit){
+        $em = $this->getDoctrine()->getManager();
+
+        //$listAdverts = $em->getRepository('TestBlogBundle:Advert')->findAll();
+
+        $listAdverts = $em->getRepository('TestBlogBundle:Advert')
+          ->findBy(
+              array(),//pas de critères
+              array('date' => 'desc'),//trié par date decroissante
+              $limit, // On sélectionne limit annonces
+              0 // À partir du premier
+          );
 
         return $this->render('TestBlogBundle:Advert:menu.html.twig', 
             array('listAdverts' => $listAdverts)
@@ -115,18 +116,13 @@ class AdvertController extends Controller {
         $appli1->setContent("j'aime voyager.");
         
 
-        $appli2 = new Appliaction();
-        $appli1->setAuthor('Captain Hadhock');
-        $appli1->setContent("je vous déteste tous");
+        $appli2 = new Application();
+        $appli2->setAuthor('Captain Hadhock');
+        $appli2->setContent("je vous déteste tous");
         
-
       //on lie les advert aux applications
         $appli1->setAdvert($advert);
         $appli2->setAdvert($advert); 
-
-      //on lie les applications aux annonces
-        //$advert->addApplication($appli1);
-        //$adevrt->addApplication($appli2);
 
         $listSkill = $em->getRepository('TestBlogBundle:Skill')->findAll();
 
@@ -140,8 +136,6 @@ class AdvertController extends Controller {
             $em->persist($advertSkill);
           }
 
-        
-
         $em->persist($advert);
 
         $em->persist($appli1);
@@ -150,7 +144,7 @@ class AdvertController extends Controller {
 
         $em->flush();
 
-        return new Response('Slug génére: '.$advert->getSlug());
+        //return new Response('Slug génére: '.$advert->getSlug());
 
         if($request->isMethod('POST')){
     //objet session
@@ -174,22 +168,14 @@ class AdvertController extends Controller {
         throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
       }
 
-      $listCategories = $em->getRepository('TestBlogBundle:Category')->findAll();
-
-      //boucle sur le tableau listCategories pour les liées à un article
-      foreach ($listCategories as $Category) {
-        $advert->addCategory($category);
-      }
-
-      $em->flush();
-
-        if($request->isMethod('POST')){
+      if($request->isMethod('POST')){
 
            $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
 
             return $this->redirectToRoute('blog_view', array('id' => $id));
-        }
-        return $this->render('TestBlogBundle:Advert:edit.html.twig', array(
+      }
+
+      return $this->render('TestBlogBundle:Advert:edit.html.twig', array(
           'advert' => $advert));
 
     }

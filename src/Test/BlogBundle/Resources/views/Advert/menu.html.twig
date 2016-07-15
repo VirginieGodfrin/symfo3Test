@@ -1,6 +1,5 @@
 
-<ul class="nav nav-pills nav-stacked">
-	Menu 
+<ul>
   {% for advert in listAdverts %}
     <li>
       <a href="{{ path('blog_view', {'id': advert.id}) }}">

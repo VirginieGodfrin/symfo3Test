@@ -10,39 +10,39 @@
     	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 	{% endblock %}
   </head>
-  
+
   <body>
 	<div class="container">
 		<header class="jumbotron">
   			<h1>Blog</h1>
-  		
+  		  <div class="row">
+          <div id="menu" class="col-md-8">
+  			     <h3>Menu</h3>
+  			     <ul class="nav nav-pills nav-stacked">
+	  			    <li> <a href="{{ path('blog_home')}}">Accueil</a></li>
+              <li><a href="{{ path('blog_add')}}">Ajouter une annonce</a></li>
+  			     </ul>
+          </div>
+          <div class="col-md-4">
+            <h4>les dernières annonces</h4>
+            {{ render(controller("TestBlogBundle:Advert:menu", {'limit':3})) }}
+          </div>
+        </div>
+  	</header>
 
-  		<div class="row">
-  			<div id="menu" class="navbar">
-  				<h3>Menu</h3>
-  				<ul class="nav nav-pills nav-stacked">
-	  				<li> <a href="{{ path('blog_home')}}">Accueil</a></li>
-	  				<li><a href="{{ path('blog_add')}}">Ajouter une annonce</a></li>
-  				</ul>
-  			</div>
-  		</header>
-
-  		<div>
-  			<h4>les dernières annonces</h4>
-      		{{ render(controller("TestBlogBundle:Advert:menu", {'limit':3})) }}
-    	</div>
-
-    	<section id="content" class="col-md-9">
+    <section id="content" class="col-md-12">
     		{% block body %}
     		{% endblock %}
-    	</section>
+    </section>
 
-  		<hr>
+  	<hr>
 
-		<footer>
-  			<p>The sky's the limit © {{ 'now'|date('Y') }} and beyond.</p>
-  		</footer>
-  	</div>
+  </div>
+
+	<footer class="container"> 
+  <hr>
+  	<p>The sky's the limit © {{ 'now'|date('Y') }} and beyond.</p>
+  </footer>
   		
 {% block javascripts %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

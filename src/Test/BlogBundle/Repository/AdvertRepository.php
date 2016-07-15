@@ -4,6 +4,7 @@ namespace Test\BlogBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\queryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * AdvertRepository
@@ -20,19 +21,32 @@ class AdvertRepository extends EntityRepository
 		* $result =$query->getResult();
 		* return $result;
 		*/
-
 		//ou 
-
 		return $this
 			->createQueryBuilder('a')
 			->getQuery()
 			->getResult();
-
 	   /*
 		* dans un controlleur : 
 		* $listAdvert = $repository->myFindAll();
 		*/	
+	}
+//requete avec pagination :-)
+	public function myFindAllOrder($page , $nbPerPage){
+		$qb = $this->createQueryBuilder('a');
+		$qb
+			->leftJoin('a.image', 'i')
+			->addSelect('i')
+			->leftJoin('a.categories', 'c')
+			->addSelect('c')
+			->orderBy('a.date', 'DESC')
+			->getQuery();
 
+		$qb
+			->setFirstResult(($page-1)*$nbPerPage)
+			->setMaxResults($nbPerPage);
+
+		return new Paginator($qb, true);
 	}
 
 	public function myFindOne($id){
@@ -41,7 +55,7 @@ class AdvertRepository extends EntityRepository
 			->where('a.id = :id') // je défini un parametre dans la requête
 			->setParameter('id', $id); // je lui attribue une valeur
 
-		return $qb->getQuery->getResult;	
+		return $qb->getQuery()->getResult();	
 	}
 
 	public function findByAuthorAndDate($author, $year){
@@ -65,7 +79,7 @@ class AdvertRepository extends EntityRepository
 		$qb
 			->andWhere('a.date BETWEEN :start AND :end')
 			->setParameter('start', new \Datetime(date('Y').'-01-01')) // date entre le 01/01
-			->setParameter('end', new \Datetime(date('Y').'-12-31')) // et le 31/12
+			->setParameter('end', new \Datetime(date('Y').'-12-31')); // et le 31/12
 	}
 
    /*
@@ -146,7 +160,15 @@ class AdvertRepository extends EntityRepository
       ->getQuery()
       ->getResult()
       ;
-  }
+  	}
+
+	public function getAdverts(){
+		$query = $this->createQueryBuilder('a')
+			->orderBy('a.date', 'DESC')
+			->getQuery();
+
+		return $query->getResult();
+	}
 
 
 }

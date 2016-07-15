@@ -4,17 +4,17 @@ services:
 #        class: Test\BlogBundle\Example
 #        arguments: ["@service_id", "plain_value", %parameter%]
 
-    test_blog.antispam:
-        class: Test\BlogBundle\Antispam\BlogAntispam
+    #test_blog.antispam:
+        #class: Test\BlogBundle\Antispam\BlogAntispam
 
-    test_blog.email.application_mailer:
-        class: Test\BlogBundle\Email\ApplicationMailer
-        arguments:
-            - "@mailer"
+    #test_blog.email.application_mailer:
+        #class: Test\BlogBundle\Email\ApplicationMailer
+        #arguments:
+            #- "@mailer"
 
-    test_blog.doctrine_listener.application_creation:
-        class: Test\BlogBundle\DoctrineListerner\ApplicationCreationListener
-        arguments:
-            - "@test_blog.email.application_mailer"
-        tags:
-            - { name: doctrine.event_listener, event: postPersist }
+    #test_blog.doctrine_listener.application_creation:
+        #class: Test\BlogBundle\DoctrineListerner\ApplicationCreationListener
+        #arguments:
+            #- "@test_blog.email.application_mailer"
+        #tags:
+            #- { name: doctrine.event_listener, event: postPersist }
