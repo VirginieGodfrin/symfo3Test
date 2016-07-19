@@ -4,11 +4,13 @@
 
   <h2>Ajouter une annonce</h2>
 
-  {{ include("TestBlogBundle:Advert:form.html.twig") }}
+{{ include("TestBlogBundle:Advert:form.html.twig") }}
+ 
+<!--<div class="well">
+		{{ form(form) }}
+	</div>  -->
+	
 
-  <p>
-    Attention : cette annonce sera ajoutée directement
-    sur la page d'accueil après validation du formulaire.
-  </p>
+	
 
 {% endblock %}

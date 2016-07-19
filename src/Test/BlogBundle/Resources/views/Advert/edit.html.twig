@@ -10,16 +10,20 @@
 
   {{ include("TestBlogBundle:Advert:form.html.twig") }}
 
-  <p>
-    Vous éditez une annonce déjà existante, merci de ne pas changer
+  <div class="col-sm-12">
+    <p>Vous éditez une annonce déjà existante, merci de ne pas changer
     l'esprit générale de l'annonce déjà publiée.
-  </p>
+    </p>
 
-  <p>
-    <a href="{{ path('blog_view', {'id': advert.id}) }}" class="btn btn-default">
+    <p>
+      <a href="{{ path('blog_view', {'id': advert.id}) }}" class="btn btn-default">
       <i class="glyphicon glyphicon-chevron-left"></i>
       Retour à l'annonce
-    </a>
-  </p>
+      </a>
+    </p>
+
+  </div>
+
+  
 
 {% endblock %}

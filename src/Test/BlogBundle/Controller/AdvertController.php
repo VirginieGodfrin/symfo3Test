@@ -21,6 +21,11 @@ use Test\BlogBundle\Entity\AdvertSkill;
 use Test\BlogBundle\Entity\Application;
 use Test\BlogBundle\Entity\Image;
 
+//formulaire
+use Test\BlogBundle\Form\AdvertType;
+
+
+
 class AdvertController extends Controller {
 
     public function indexAction($page){
@@ -98,85 +103,55 @@ class AdvertController extends Controller {
 
     public function addAction(Request $request){
 
-      $em= $this->getDoctrine()->getManager();
+      $advert = new Advert();
+      $advert->setDate(new \Datetime());
 
-        $advert = new Advert();
-        $advert->setTitle('Le monde des éléphants.');
-        $advert->setAuthor('Lara');
-        $advert->setContent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed molestie a dui ac fringilla.");
-        //...
-        $image = new Image();
-        $image->setUrl('https://pixabay.com/static/uploads/photo/2016/01/30/17/41/africa-1170106_960_720.jpg');
-        $image->setAlt('éléphant');
-        //...
-        $advert->setImage($image);
+      $form = $this->get('form.factory')->create(AdvertType::class, $advert);
 
-        $appli1 = new Application();
-        $appli1->setAuthor('Yoko');
-        $appli1->setContent("j'aime voyager.");
-        
-
-        $appli2 = new Application();
-        $appli2->setAuthor('Captain Hadhock');
-        $appli2->setContent("je vous déteste tous");
-        
-      //on lie les advert aux applications
-        $appli1->setAdvert($advert);
-        $appli2->setAdvert($advert); 
-
-        $listSkill = $em->getRepository('TestBlogBundle:Skill')->findAll();
-
-          foreach ($listSkill as $skill) {
-            
-            $advertSkill = new AdvertSkill();
-            $advertSkill->setAdvert($advert);
-            $advertSkill->setSkill($skill);
-            $advertSkill->setLevel('Null');
-
-            $em->persist($advertSkill);
-          }
-
+      if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+        $em = $this->getDoctrine()->getManager();
         $em->persist($advert);
-
-        $em->persist($appli1);
-
-        $em->persist($appli2);
-
         $em->flush();
 
-        //return new Response('Slug génére: '.$advert->getSlug());
+        $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
 
-        if($request->isMethod('POST')){
-    //objet session
-            $request->getSession()->getFlashbag()->add('notice', 'Annonce enrégistrée');
-
-            return $this->redirectToRoute('blog_view', 
-                array('id' => $advert->getId())
-            );
-        }
-
-        return $this->render('TestBlogBundle:Advert:add.html.twig');
+        return $this->redirectToRoute('blog_view', array('id' => $advert->getId()));
     }
+
+    return $this->render('TestBlogBundle:Advert:add.html.twig', array(
+      'form' => $form->createView(),
+    ));
+  }
+
 
     public function editAction($id, Request $request){
 
       $em = $this->getDoctrine()->getManager();
 
       $advert = $em->getRepository('TestBlogBundle:Advert')->find($id);
+      $advert->setDate(new \Datetime());
 
       if (null === $advert) {
         throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
       }
 
-      if($request->isMethod('POST')){
+      $form = $this->get('form.factory')->create(AdvertType::class, $advert);
 
-           $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
 
-            return $this->redirectToRoute('blog_view', array('id' => $id));
-      }
+      if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($advert);
+        $em->flush();
+
+        $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
+
+        return $this->redirectToRoute('blog_view', array('id' => $advert->getId()));
+    }
 
       return $this->render('TestBlogBundle:Advert:edit.html.twig', array(
-          'advert' => $advert));
+      'form' => $form->createView(),
+      'advert' => $advert,
+    ));
 
     }
 

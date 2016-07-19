@@ -112,7 +112,7 @@ class Advert
      * @ORM\PreUpdate
      */
     public function updateDate(){
-        $this->setUpdateAt(new \DateTime());
+        $this->setUpdatedAt(new \DateTime());
     }
 
     public function increaseApplication()
