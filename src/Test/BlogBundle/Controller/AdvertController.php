@@ -129,7 +129,7 @@ class AdvertController extends Controller {
       $em = $this->getDoctrine()->getManager();
 
       $advert = $em->getRepository('TestBlogBundle:Advert')->find($id);
-      $advert->setDate(new \Datetime());
+      //$advert->setDate(new \Datetime());
 
       if (null === $advert) {
         throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");

@@ -12,8 +12,9 @@
       {% if advert.image is not null %}
         <img src="{{ advert.image.url }}" alt="{{ advert.image.alt }}" width="200">
       {% endif %} 
+      
+      <p><i> Par {{ advert.author }}, le {{ advert.date|date('d/m/Y') }}</i></p>
 
-      <i> Par {{ advert.author }}, le {{ advert.date|date('d/m/Y') }}</i>
       <p> {{ advert.content }} </p>
 
     </div>
