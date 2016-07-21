@@ -47,15 +47,23 @@
 
 	<div class="form-group">
 		<h4> Ajouter une image </h4>
-		{{ form_label(form.image.url, "image-url", {'label_attr': {'class': 'col-sm-2'}}) }}
-		{{ form_errors(form.title) }}
+    {# 
+      {{ form_label(form.image.url, "image-url", {'label_attr': {'class': 'col-sm-2'}}) }}
+      {{ form_errors(form.title) }}
 
-		{{ form_widget(form.image.url, {'attr': {'class': 'form-control col-sm-12'}}) }}
+      {{ form_widget(form.image.url, {'attr': {'class': 'form-control col-sm-12'}}) }}
 
-		{{ form_label(form.image.alt, "image-alt", {'label_attr': {'class': 'col-sm-2'}}) }}
-		{{ form_errors(form.title) }}
+      {{ form_label(form.image.alt, "image-alt", {'label_attr': {'class': 'col-sm-2'}}) }}
+      {{ form_errors(form.title) }}
 
-		{{ form_widget(form.image.alt, {'attr': {'class': 'form-control col-sm-12'}}) }}
+      {{ form_widget(form.image.alt, {'attr': {'class': 'form-control col-sm-12'}}) }}
+    #}
+      {{ form_label(form.image.file, "image-alt", {'label_attr': {'class': 'col-sm-2'}}) }}
+      {{ form_errors(form.title) }}
+
+      {{ form_widget(form.image.file, {'attr': {'class': 'col-sm-12'}}) }}
+
+		
 
 	</div>
 
@@ -80,8 +88,7 @@
 	
 </div
 
-{# On charge la bibliothèque jQuery. Ici, je la prends depuis le CDN google
-   mais si vous l'avez en local, changez simplement l'adresse. #}
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 {# Voici le script en question : #}

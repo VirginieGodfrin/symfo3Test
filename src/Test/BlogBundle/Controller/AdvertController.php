@@ -109,6 +109,9 @@ class AdvertController extends Controller {
       $form = $this->get('form.factory')->create(AdvertType::class, $advert);
 
       if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+      
+        $advert->getImage()->upload();
+
         $em = $this->getDoctrine()->getManager();
         $em->persist($advert);
         $em->flush();

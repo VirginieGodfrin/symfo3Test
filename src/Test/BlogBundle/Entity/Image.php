@@ -4,6 +4,8 @@ namespace Test\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 /**
  * Image
  *
@@ -35,9 +37,9 @@ class Image
      */
     private $alt;
 
-    
     private $file;
 
+    
 
     /**
      * Get id
@@ -97,13 +99,36 @@ class Image
         return $this->alt;
     }
 
-    public function getFile()
-    {
+    public function getFile(){
         return $this->file;
     }
 
-    public function setFile(UploadedFile $file = null)
-    {
+    public function setFile(UploadedFile $file = null){
         $this->file = $file;
     }
+
+    public function upload(){
+
+        if(null === $this->file){
+            return;
+        }
+    //recup du nom original du fichier
+        $name = $this->file->getClientOriginalName();
+    //move: déplace le fichier dans le repertoire de notre choix
+        $this->file->move($this->getUploadRootDir(), $name);
+        
+        $this->url = $name;
+        $this->alt = $name; 
+    }
+
+    public function getUploadDir(){
+        // On retourne le chemin relatif vers l'image pour un navigateur (relatif au répertoire /web donc)
+            return 'uploads/img';
+    }
+
+    public function getUploadRootDir(){
+        // On retourne le chemin relatif vers l'image pour notre code PHP
+            return __DIR__.'/../../../../web/'.$this->getUploadDir();
+    }
+    
 }
