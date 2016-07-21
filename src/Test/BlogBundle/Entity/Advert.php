@@ -58,8 +58,10 @@ class Advert
     private $published = true;
 
     //Advert propriétaire d'image relation OneToOne avec Image
+    //Pour que l'entité Image liée à une annonce soit supprimée lorsque vous supprimez l'entité Advert, 
+    //l'action remove doit être en cascade.
     /**
-     * @ORM\OneToOne(targetEntity="Test\BlogBundle\Entity\Image", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Test\BlogBundle\Entity\Image", cascade={"persist", "remove"})
      */
     private $image;
 
