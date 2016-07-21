@@ -10,7 +10,7 @@
       <h2> {{ advert.title }}</h2>
         <p> Image</p>
       {% if advert.image is not null %}
-          <img src="{{ asset(advert.image.webPath) }}" alt="{{ advert.image.alt }}" />
+          <img src="{{ asset(advert.image.webPath) }}" alt="{{ advert.image.alt }}" width = "200" />
       {% endif %} 
       
       <p><i> Par {{ advert.author }}, le {{ advert.date|date('d/m/Y') }}</i></p>
@@ -54,12 +54,7 @@
       </a>
     </p>
 
-    <div>
-      {# On affiche tous les messages flash dont le nom est « info » #}
-      {% for message in app.session.flashbag.get('info') %}
-        <p>Message flash : {{ message }}</p>
-      {% endfor %}
-    </div>
+    
 
     
   {% endblock %}

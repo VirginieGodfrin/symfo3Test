@@ -104,7 +104,8 @@ class AdvertController extends Controller {
     public function addAction(Request $request){
 
       $advert = new Advert();
-      $advert->setDate(new \Datetime());
+
+      //$advert->setDate(new \Datetime());
 
       $form = $this->get('form.factory')->create(AdvertType::class, $advert);
 
@@ -117,12 +118,12 @@ class AdvertController extends Controller {
         $request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
 
         return $this->redirectToRoute('blog_view', array('id' => $advert->getId()));
-    }
+      }
 
-    return $this->render('TestBlogBundle:Advert:add.html.twig', array(
-      'form' => $form->createView(),
-    ));
-  }
+      return $this->render('TestBlogBundle:Advert:add.html.twig', array(
+        'form' => $form->createView(),
+      ));
+    }
 
 
     public function editAction($id, Request $request){
@@ -140,41 +141,45 @@ class AdvertController extends Controller {
 
 
       if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($advert);
+
         $em->flush();
 
         $request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifiée.');
 
         return $this->redirectToRoute('blog_view', array('id' => $advert->getId()));
-    }
+      }
 
       return $this->render('TestBlogBundle:Advert:edit.html.twig', array(
       'form' => $form->createView(),
       'advert' => $advert,
-    ));
-
+      ));
     }
 
-    public function deleteAction($id){
+    public function deleteAction($id, Request $request){
 
       $em = $this->getDoctrine()->getManager();
-
     // On récupère l'annonce $id
       $advert = $em->getRepository('TestBlogBundle:Advert')->find($id);
 
       if (null === $advert) {
         throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas.");
       }
+    //formulaire vide qui ne contient que des champs CSRF -> protection contre la faille CSFR
+      $form = $this->get('form.factory')->create();
 
-    // On boucle sur les catégories de l'annonce pour les supprimer
-      foreach ($advert->getCategories() as $category) {
-        $advert->removeCategory($category);
+      if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+        $em->remove($advert);
+        $em->flush();
+
+        //$request->getSession()->getFlashBag()->add('info', "L'annonce a bien été supprimée.");
+
+        return $this->redirectToRoute('blog_home');
       }
-
-      $em->flush();
-
-      return $this->render('TestBlogBundle:Advert:delete.html.twig');
+      
+      return $this->render('TestBlogBundle:Advert:delete.html.twig', array(
+        'advert'=>$advert,
+        'form'=> $form->createView(),
+      ));
     }
 
 //autres méthodes ....  
