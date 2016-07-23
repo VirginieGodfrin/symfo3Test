@@ -10,4 +10,16 @@ namespace Test\BlogBundle\Repository;
  */
 class ApplicationRepository extends \Doctrine\ORM\EntityRepository
 {
+
+	public function isFlood($ip, $seconds){
+		return (bool) $this->createQueryBuilder('a')
+			->select('COUNT(a)')
+			->where('a.date >= :date')
+			->setParameter('date', new \Datetime($seconds.'seconds ago'))
+			// Nous n'avons pas cet attribut, je laisse en commentaire, mais voici comment pourrait être la condition :
+      		//->andWhere('a.ip = :ip')->setParameter('ip', $ip)
+      		->getQuery()
+      		->getSingleScalarResult();
+	}
+
 }

@@ -1,20 +1,6 @@
-# -2- déclaration du service au conteneur de service (configurat)
 services:
-#    test_blog.example:
-#        class: Test\BlogBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
-
-    #test_blog.antispam:
-        #class: Test\BlogBundle\Antispam\BlogAntispam
-
-    #test_blog.email.application_mailer:
-        #class: Test\BlogBundle\Email\ApplicationMailer
-        #arguments:
-            #- "@mailer"
-
-    #test_blog.doctrine_listener.application_creation:
-        #class: Test\BlogBundle\DoctrineListerner\ApplicationCreationListener
-        #arguments:
-            #- "@test_blog.email.application_mailer"
-        #tags:
-            #- { name: doctrine.event_listener, event: postPersist }
+    test_blog.validator.antiflood: # Le nom du service
+        class: Test\BlogBundle\Validator\AntifloodValidator # La classe du service, ici notre validateur déjà créé
+        arguments: ["@request_stack", "@doctrine.orm.entity_manager"] # Les données qu'on injecte au service : la requête et l'EntityManager
+        tags:
+            - { name: validator.constraint_validator, alias: Test_blog_antiflood }  # C'est avec l'alias qu'on retrouvera le service
