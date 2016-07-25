@@ -109,6 +109,8 @@ class AdvertController extends Controller {
 
       $form = $this->get('form.factory')->create(AdvertType::class, $advert);
 
+      
+
       if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
 
         $em = $this->getDoctrine()->getManager();
