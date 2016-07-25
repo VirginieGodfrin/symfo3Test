@@ -7,10 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 //validation
 use Symfony\Component\Validator\Constraints as Assert;
+
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 use Test\BlogBundle\Validator\Antiflood;
+
 
 
 
@@ -46,7 +48,7 @@ class Advert
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255, unique=true)
-     * @Assert\Length(min=10)
+     * @Assert\Length(min=5)
      * 
      */
     private $title;
@@ -64,7 +66,6 @@ class Advert
      *
      * @ORM\Column(name="content", type="string", length=255)
      * @Assert\NotBlank()
-     * @Antiflood()
      */
     private $content;
 

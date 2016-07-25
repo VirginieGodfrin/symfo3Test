@@ -44,7 +44,6 @@ class AdvertController extends Controller {
           ->myFindAllOrder($page, $nbPerPage);
 
         $nbPages = ceil(count($listAdverts)/$nbPerPage);
-        var_dump(count($listAdverts));
 
         if($page > $nbPages){
           throw $this->createNotFoundException("La page ".$page." n'existe pas.");

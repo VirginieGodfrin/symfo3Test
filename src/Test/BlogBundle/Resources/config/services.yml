@@ -3,4 +3,4 @@ services:
         class: Test\BlogBundle\Validator\AntifloodValidator # La classe du service, ici notre validateur déjà créé
         arguments: ["@request_stack", "@doctrine.orm.entity_manager"] # Les données qu'on injecte au service : la requête et l'EntityManager
         tags:
-            - { name: validator.constraint_validator, alias: Test_blog_antiflood }  # C'est avec l'alias qu'on retrouvera le service
+            - { name: validator.constraint_validator, alias: test_blog_antiflood }  # C'est avec l'alias qu'on retrouvera le service
