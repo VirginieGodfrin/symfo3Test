@@ -6,7 +6,7 @@
 
 {% block body %}
 
-  <h2>Page d'accueil de notre site</h2>
+  <h2>Welkom Home</h2>
 
   {# On affiche tous les messages flash dont le nom est « info » #}
   {% for message in app.session.flashbag.get('info') %}
@@ -14,7 +14,7 @@
   {% endfor %}
 
   {# Pour afficher les dernières annonces, on réutilise le contrôleur menu du PlatformBundle #}
-  <h3>Dernières annonces</h3>
-  {{ render(controller("TestBlogBundle:Advert:menu", {'limit': 3})) }}
+  <h3>Toutes les annonces</h3>
+  {{ render(controller("TestBlogBundle:Advert:menu", {'limit': NULL})) }}
 
 {% endblock %}

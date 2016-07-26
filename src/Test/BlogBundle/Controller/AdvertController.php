@@ -24,6 +24,11 @@ use Test\BlogBundle\Entity\Image;
 //formulaire
 use Test\BlogBundle\Form\AdvertType;
 
+//accesControl
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
+// annotation security
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
 class AdvertController extends Controller {
@@ -99,8 +104,15 @@ class AdvertController extends Controller {
         'listAdvertSkills' => $listAdvertSkills
       ));
     }
-
+    /**
+     * @Security("has_role('ROLE_AUTEUR')")
+     */
     public function addAction(Request $request){
+    //accessControl
+      //if (!$this->get('security.authorization_checker')->isGranted('ROLE_AUTEUR')) {
+      // Sinon on déclenche une exception « Accès interdit »
+      //  throw new AccessDeniedException('Accès limité aux auteurs.');
+      //}
 
       $advert = new Advert();
 

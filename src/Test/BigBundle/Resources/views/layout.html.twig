@@ -21,10 +21,12 @@
   			<h1>BigBlog</h1>
   		  <div class="row">
           <div id="menu" class="col-md-8">
-  			     <h3>Menu</h3>
   			     <ul class="nav nav-pills nav-stacked">
 	  			    <li> <a href="{{ path('blog_home')}}">Accueil</a></li>
-              <li><a href="{{ path('blog_add')}}">Ajouter une annonce</a></li>
+              <!-- authentifivation securisation del'affichage -->
+              {% if is_granted('ROLE_AUTEUR') %}
+                <li><a href="{{ path('blog_add')}}">Ajouter une annonce</a></li>
+              {% endif %}
   			     </ul>
           </div>
           <div class="col-md-4">
