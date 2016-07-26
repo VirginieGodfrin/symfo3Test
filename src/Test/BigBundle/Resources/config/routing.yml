@@ -1,0 +1,9 @@
+big_home:
+    path: /
+    defaults:
+        _controller: TestBigBundle:Big:index
+
+big_contact:
+    path: /contact
+    defaults:
+        _controller: TestBigBundle:Big:contact

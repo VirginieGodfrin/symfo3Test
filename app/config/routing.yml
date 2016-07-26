@@ -1,3 +1,11 @@
+
+test_user:
+    resource: "@TestUserBundle/Resources/config/routing.yml"
+    prefix:   /user
+
+test_big:
+    resource: "@TestBigBundle/Resources/config/routing.yml"
+
 test_blog:
     resource: "@TestBlogBundle/Resources/config/routing.yml"
     prefix:   /blog
