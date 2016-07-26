@@ -13,3 +13,14 @@ test_blog:
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+
+login:
+    path: /login
+    defaults:
+        _controller: TestUserBundle:Security:login
+
+login_check:
+    path: /login_check
+
+logout:
+    path: /logout
