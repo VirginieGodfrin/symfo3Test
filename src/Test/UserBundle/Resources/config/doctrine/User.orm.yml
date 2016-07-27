@@ -8,17 +8,4 @@ Test\UserBundle\Entity\User:
             id: true
             generator:
                 strategy: AUTO
-    fields:
-        username:
-            type: string
-            length: 255
-        password:
-            type: string
-            length: 255
-        salt:
-            type: string
-            length: 255
-        roles:
-            type: string
-            length: 255
-    lifecycleCallbacks: {  }
+
