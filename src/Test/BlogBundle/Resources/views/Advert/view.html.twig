@@ -14,8 +14,12 @@
       {% endif %} 
       
       <p><i> Par {{ advert.author }}, le {{ advert.date|date('d/m/Y') }}</i></p>
-
-      <p> {{ advert.content }} </p>
+      
+  <!-- check le spam -->
+      <p>
+      {% if not checkIfSpam(advert.content) %}
+         {{ advert.content }}
+      {% endif %} </p>
 
     </div>
 

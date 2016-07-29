@@ -104,9 +104,10 @@ class AdvertController extends Controller {
         'listAdvertSkills' => $listAdvertSkills
       ));
     }
-    /**
-     * @Security("has_role('ROLE_AUTEUR')")
-     */
+
+    ///**
+     //* @Security("has_role('ROLE_ADMIN')")
+     //*/
     public function addAction(Request $request){
     //accessControl
       //if (!$this->get('security.authorization_checker')->isGranted('ROLE_AUTEUR')) {

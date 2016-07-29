@@ -1,6 +1,21 @@
 services:
+    tesT_blog.antispam:
+        class: Test\BlogBundle\Antispam\BlogAntispam
+        arguments:
+            - "@mailer"
+            - 50
+        calls: 
+            - [setLocale,[%locale%]]
+
     test_blog.validator.antiflood: # Le nom du service
         class: Test\BlogBundle\Validator\AntifloodValidator # La classe du service, ici notre validateur déjà créé
         arguments: ["@request_stack", "@doctrine.orm.entity_manager"] # Les données qu'on injecte au service : la requête et l'EntityManager
         tags:
             - { name: validator.constraint_validator, alias: test_blog_antiflood }  # C'est avec l'alias qu'on retrouvera le service
+
+    test_blog.twig.antispamextension:
+        class: Test\BlogBundle\Twig\AntispamExtension
+        arguments:
+            - "@tesT_blog.antispam"
+        tags:
+            - { name: twig.extension}

@@ -30,3 +30,6 @@ security:
                 target: /blog
             remember_me:
                 secret:     %secret% # %secret% est un paramètre de parameter
+
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
