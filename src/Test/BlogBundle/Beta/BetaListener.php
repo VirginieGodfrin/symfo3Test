@@ -27,6 +27,8 @@ class BetaListener{
 		$response = $this->betaHtml->addBeta($event->getResponse(), $remainingDays);
 
 		$event->setResponse($response);
+
+		//$event->stopPropagation();
 	}
 
 }

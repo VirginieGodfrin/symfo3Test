@@ -30,6 +30,10 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 // annotation security
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+//event
+use Test\BlogBundle\Event\MessagePostEvent;
+use Test\BlogBundle\Event\PlatformEvent;
+
 
 class AdvertController extends Controller {
 
@@ -124,6 +128,13 @@ class AdvertController extends Controller {
       
 
       if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+
+      //on crée l'évènement  
+        //$event = new MessagePostEvent($advert->getContent(), $advert->getUser());
+      //on déclenche l'évènement
+        //$this->get('event_dispatcher')->dispatch(PlatformEvent::POST_MESSAGE, $event);
+      //on récupère ce qui a été modifié par le ou les listener: le message
+        //$advert->setContent($event->getMessage());
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($advert);

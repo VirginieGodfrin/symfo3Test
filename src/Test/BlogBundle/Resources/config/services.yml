@@ -30,5 +30,17 @@ services:
             - "2016-09-01"
         tags: 
             - { name: kernel.event_listener, event: kernel.response, method: processBeta }
-            
+    
+    test_blog.bigbrother.message_notificator:
+        class: Test\BlogBundle\bigbrother\messageNotificator
+        arguments:
+            - "@mailer"
+
+    test_blog.bigbrother.message_listener:
+        class: Test\BlogBundle\Bigbrother\MessageListener
+        arguments:
+            - "@test_blog.bigbrother.message_notificator"
+            - ["pol", "pierre", "jean"]
+        tags:
+            - { name: kernel.event_listener, event: test_blog.post_message, method: processMessage }
 
